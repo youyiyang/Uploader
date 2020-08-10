@@ -1,0 +1,92 @@
+
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans       
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+        http://www.springframework.org/schema/mvc  
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">  
+      
+
+<import resource="classpath*:user-beans.xml" />
+<context:component-scan base-package="com.maskkk.*" />
+<context:annotation-config />
+<!-- <context:component-scan base-package="com.maskkk.*" />  --> 
+<!-- 自动扫描(自动注入) -->
+<!-- <context:component-scan base-package="com.maskkk.controller.LoginController" />
+<context:component-scan base-package="com.maskkk.service.UserService" /> -->
+
+<mvc:resources mapping="/image/**" location="/image/" />
+<mvc:resources location="favicon.ico" mapping="favicon.ico"/>
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+<bean id="viewResolver"  
+class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <!-- 前缀,我们的视图文件应该放到/WEB-INF/view/目录下,这里我们需要在WEB-INF下面创建view文件夹 -->  
+    <property name="prefix" value="/" />  
+    <!-- 设置后缀为.jsp -->
+    <property name="suffix" value=".jsp" />  
+</bean>
+
+
+
+  
+<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages" />
+</bean>
+     
+<bean id="multipartResolver"  
+   class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+   <property name="maxUploadSize" value="209715200" />     
+   <property name="defaultEncoding" value="UTF-8" />  
+   <property name="resolveLazily" value="true" />  
+</bean>  
+<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+<bean  class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">  
+</bean>  
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">  
+    <property name="messageConverters">  
+        <list>  
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />  
+        </list>  
+    </property>  
+</bean> 
+<!-- 加入json支持 -->  
+<mvc:annotation-driven />
+<!-- 处理请求response返回值，如下配置能正确返回字符串型返回值,如返回值为对象，则自动转为json -->
+<bean id="mappingJacksonHttpMessageConverter"
+        class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json; charset=UTF-8</value>
+                <value>text/html; charset=UTF-8</value>
+            </list>
+        </property>
+</bean>
+<bean id="mappingStringHttpMessageConverter"
+        class="org.springframework.http.converter.StringHttpMessageConverter" />
+
+<bean id="handleAdapter"
+        class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="mappingJacksonHttpMessageConverter" /><!-- json转换器 -->
+            </list>
+        </property>
+</bean>
+
+
+<!-- 设置返回字符串编码 -->  
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="messageConverters">
+        <list>
+            <!--json视图拦截器，读取到@ResponseBody的时候去配置它-->
+            <ref bean="mappingJacksonHttpMessageConverter"/>
+        </list>
+    </property>
+</bean>  
+
+</beans>
