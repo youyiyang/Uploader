@@ -1,0 +1,2 @@
+这个项目是一个用来让用户上传文件到服务器上的。它类似于百度网盘。它的框架是Java SpringMVC。
+它的前端采用的是krajee写的JavaScript。这里我向krajee表示感谢！
